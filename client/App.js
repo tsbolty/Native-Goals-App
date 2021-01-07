@@ -18,25 +18,40 @@ export default function App() {
     setData({ ...data, body: inputText })
   }
 
-  useEffect(async ()=>{
-    const {data} = await fetch('api/test/read')
-    setAllData(data)
-  }, [])
-
-  const handleDeleteClick = id =>{
-    fetch(`/api/test/delete/${id}`, {
-      method: 'DELETE'
-    })
+  const getAllData = ()=>{
+    return fetch('/api/test/create')
+    .then(response => console.log('got a response!'))
     .catch(err => console.log(err))
   }
 
+  useEffect(() => {
+    getAllData()
+  }, [allData])
+
+  const handleDeleteClick = id => {
+    fetch(`/api/test/delete/${id}`, {
+      method: 'DELETE'
+    })
+      .catch(err => console.log(err))
+  }
+
   const handleSubmit = () => {
+    console.log('the fuck')
+    // fetch('/api/test/create', {
+    //   method: 'POST',
+    //   body: data
+    // }).catch(err => console.log(err))
+    setAllData([...allData, data])
     fetch('/api/test/create', {
       method: 'POST',
-      body: data
-    }).catch(err => console.log(err))
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
   }
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.preview}>
@@ -59,7 +74,7 @@ export default function App() {
         placeholder='Body' />
       <Button
         title='Submit'
-        onPress={() => handleSubmit} />
+        onPress={() => handleSubmit()} />
       <List onDelete={handleDeleteClick} listItems={allData} />
     </View>
   );
